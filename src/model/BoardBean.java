@@ -8,7 +8,7 @@ public class BoardBean {
 	private String email;
 	private String subject;
 	private String password;
-	private Date reg_date;
+	private String reg_date;
 	private int ref;
 	private int re_step;
 	private int re_level;
@@ -45,10 +45,10 @@ public class BoardBean {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public Date getReg_date() {
+	public String getReg_date() {
 		return reg_date;
 	}
-	public void setReg_date(Date reg_date) {
+	public void setReg_date(String reg_date) {
 		this.reg_date = reg_date;
 	}
 	public int getRef() {

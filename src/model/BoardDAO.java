@@ -3,6 +3,7 @@ package model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Vector;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -27,13 +28,87 @@ public class BoardDAO {
 			//데이터 소스를 이용하여 연결 
 			con = ds.getConnection();
 			
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void insertBoard(BoardBean bean) {
+		getCon();
+		int ref=0;
+		int re_step=1;
+		int re_level=1;
 		
 		
+		try {
+			String refsql = "select max(ref) from board";
+			ps = con.prepareStatement(refsql);
+			rs = ps.executeQuery();
+			if(rs.next()) {
+				ref = rs.getInt(1) + 1;
+			}
+			
+			String sql = "insert into board (writer, email, subject, password, reg_date, ref, re_step, re_level, readcount, content) "
+					+ "values (?,?,?,?,now(),?,?,?,0,?)";
+			ps = con.prepareStatement(sql);
+			
+			System.out.println(bean.getWriter());
+			System.out.println(bean.getEmail());
+			System.out.println(bean.getSubject());
+			System.out.println(bean.getPassword());
+			
+			ps.setString(1, bean.getWriter());
+			ps.setString(2, bean.getEmail());
+			ps.setString(3, bean.getSubject());
+			ps.setString(4, bean.getPassword());
+			ps.setInt(5, ref);
+			ps.setInt(6, re_step);
+			ps.setInt(7, re_level);
+			ps.setString(8, bean.getContent());
+			
+			ps.executeUpdate();
+			
+			con.close();
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public Vector<BoardBean> getAllBoard() {
+		
+		Vector<BoardBean> v = new Vector();
+		getCon();
+		
+		try {
+			String sql = "select * from board order by ref desc, re_step asc";
+			ps = con.prepareStatement(sql);
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				BoardBean bean = new BoardBean();
+				bean.setNum(rs.getInt(1));
+				bean.setWriter(rs.getString(2));
+				bean.setEmail(rs.getString(3));
+				bean.setSubject(rs.getString(4));
+				bean.setPassword(rs.getString(5));
+				bean.setReg_date(rs.getDate(6).toString());			
+				bean.setRef(rs.getInt(7));
+				bean.setRe_step(rs.getInt(8));
+				bean.setRe_level(rs.getInt(9));
+				bean.setReadcount(rs.getInt(10));
+				bean.setContent(rs.getString(11));
+				
+				v.add(bean);
+			}
+			con.close();
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return v;
 		
 	}
+	
 }

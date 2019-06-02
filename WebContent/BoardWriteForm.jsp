@@ -31,8 +31,8 @@
 				<td><input type="text" name="writer" /></td>
 			</tr>
 			<tr>
-				<td>Title</td>
-				<td><input type="text" name="title" /></td>
+				<td>Subject</td>
+				<td><input type="text" name="subject" /></td>
 			</tr>
 			<tr>
 				<td>Email</td>
@@ -40,7 +40,7 @@
 			</tr>
 			<tr>
 				<td>Password</td>
-				<td><input type="password" name="pwd" /></td>
+				<td><input type="password" name="password" /></td>
 			<tr>
 				<td>Content</td>
 				<td><textarea rows="10" cols="30" name="content"></textarea></td>

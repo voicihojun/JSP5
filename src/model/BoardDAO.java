@@ -56,6 +56,7 @@ public class BoardDAO {
 			System.out.println(bean.getEmail());
 			System.out.println(bean.getSubject());
 			System.out.println(bean.getPassword());
+			System.out.println(bean.getReg_date());
 			
 			ps.setString(1, bean.getWriter());
 			ps.setString(2, bean.getEmail());
@@ -109,6 +110,45 @@ public class BoardDAO {
 		
 		return v;
 		
+	}
+	
+	public BoardBean getOneBoard(int num) {
+		BoardBean bean = new BoardBean();
+		getCon();
+		
+		try {
+			String readsql = "update board set readcount = readcount+1 where num=?";
+			ps = con.prepareStatement(readsql);
+			ps.setInt(1, num);
+			ps.executeUpdate();
+			
+			
+			String sql = "select * from board where num=?";
+			ps = con.prepareStatement(sql);
+			ps.setInt(1, num);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				bean.setNum(rs.getInt(1));
+				bean.setWriter(rs.getString(2));
+				bean.setEmail(rs.getString(3));
+				bean.setSubject(rs.getString(4));
+				bean.setPassword(rs.getString(5));
+				bean.setReg_date(rs.getDate(6).toString());			
+				bean.setRef(rs.getInt(7));
+				bean.setRe_step(rs.getInt(8));
+				bean.setRe_level(rs.getInt(9));
+				bean.setReadcount(rs.getInt(10));
+				bean.setContent(rs.getString(11));
+			}
+			con.close();
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bean;
 	}
 	
 }

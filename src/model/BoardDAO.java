@@ -76,14 +76,21 @@ public class BoardDAO {
 		}
 	}
 	
-	public Vector<BoardBean> getAllBoard() {
+	public Vector<BoardBean> getAllBoard(int start, int end) {
 		
-		Vector<BoardBean> v = new Vector();
+		Vector<BoardBean> v = new Vector<>();
 		getCon();
 		
 		try {
-			String sql = "select * from board order by ref desc, re_step asc, re_level asc";
+//			String sql = "select * from board order by ref desc, re_step asc, re_level asc";
+			
+			// 10개씩 끊어져서는 나오나 순서가 안 맞음.
+//			String sql = "select board.*, @rownum := @rownum + 1 as no from board where (@rownum :=0) = 0 limit ?,?";
+			String sql = "select board1.*, @rownum := @rownum + 1 as no from (select * from board order by ref desc, re_level asc, re_step asc) board1 where (@rownum :=0) = 0 limit ?,?";
 			ps = con.prepareStatement(sql);
+			ps.setInt(1, start);
+			ps.setInt(2, end);
+			
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
@@ -277,6 +284,25 @@ public class BoardDAO {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public int getAllCount() {
+		getCon();
+		int count = 0;
+		
+		try {
+			String sql = "select count(*) from board";
+			ps = con.prepareStatement(sql);
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				count = rs.getInt(1);
+			}
+			con.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return count;
 	}
 	
 }

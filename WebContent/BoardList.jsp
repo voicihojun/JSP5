@@ -19,6 +19,9 @@
 	#subject {
 		text-align: left;
 	}
+	a {
+		text-decoration: none;
+	}
 </style>
 </head>
 <body>
@@ -43,7 +46,19 @@
 %>
 		<tr>
 			<td><%=i+1 %></td>
-			<td id="subject"><a href="BoardInfo.jsp?num=<%=bean.getNum() %>"><%=bean.getSubject() %></a></td>
+			<td id="subject"><a href="BoardInfo.jsp?num=<%=bean.getNum() %>">
+		<%
+			if(bean.getRe_step() > 1) {
+				for(int j=0; j < (bean.getRe_step() - 1)*3; j++) {
+		%>
+			&nbsp;
+		
+		<%					
+				}
+			}
+		
+		%>			
+			<%=bean.getSubject() %></a></td>
 			<td><%=bean.getWriter() %></td>
 			<td><%=bean.getReg_date() %></td>
 			<td><%=bean.getReadcount() %></td>

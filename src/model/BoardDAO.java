@@ -82,7 +82,7 @@ public class BoardDAO {
 		getCon();
 		
 		try {
-			String sql = "select * from board order by ref desc, re_step asc";
+			String sql = "select * from board order by ref desc, re_step asc, re_level asc";
 			ps = con.prepareStatement(sql);
 			rs = ps.executeQuery();
 			
@@ -149,6 +149,134 @@ public class BoardDAO {
 			e.printStackTrace();
 		}
 		return bean;
+	}
+	
+	public void rewriteBoard(BoardBean bean) {
+		int ref = bean.getRef();
+		int re_step = bean.getRe_step();
+		int re_level = bean.getRe_level();
+		
+		getCon();
+		
+		try {
+			String levelsql = "update board set re_level = re_level + 1 where ref=? and re_level > ?";
+			ps = con.prepareStatement(levelsql);
+			ps.setInt(1, ref);
+			ps.setInt(2, re_level);
+			ps.executeUpdate();
+			
+			String sql = "insert into board (writer, email, subject, password, reg_date, ref, re_step, re_level, readcount, content) "
+					+ "values (?,?,?,?,now(),?,?,?,0,?)";
+			ps = con.prepareStatement(sql);
+			ps.setString(1, bean.getWriter());
+			ps.setString(2, bean.getEmail());
+			ps.setString(3, bean.getSubject());
+			ps.setString(4, bean.getPassword());
+			ps.setInt(5, ref);
+			ps.setInt(6, re_step + 1); //re_step = re_step of parent's post + 1
+			ps.setInt(7, re_level + 1); //re_level = re_level of parent's post + 1
+			ps.setString(8, bean.getContent());
+			ps.executeUpdate();
+			con.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
+	public BoardBean getOneBoardUpdated(int num) {
+		BoardBean bean = new BoardBean();
+		getCon();
+		
+		try {
+			String sql = "select * from board where num=?";
+			ps = con.prepareStatement(sql);
+			ps.setInt(1, num);
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				bean.setNum(rs.getInt(1));
+				bean.setWriter(rs.getString(2));
+				bean.setEmail(rs.getString(3));
+				bean.setSubject(rs.getString(4));
+				bean.setPassword(rs.getString(5));
+				bean.setReg_date(rs.getDate(6).toString());			
+				bean.setRef(rs.getInt(7));
+				bean.setRe_step(rs.getInt(8));
+				bean.setRe_level(rs.getInt(9));
+				bean.setReadcount(rs.getInt(10));
+				bean.setContent(rs.getString(11));
+				
+			}
+			
+			con.close();
+			
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return bean;
+	}
+	
+	public String getPass(int num) {
+		String pwd = "";
+		getCon();
+		
+		try {
+			String sql = "select password from board where num=?";
+			ps = con.prepareStatement(sql);
+			ps.setInt(1, num);
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				pwd = rs.getString(1);
+			}
+			con.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return pwd;
+	}
+	
+	public void updateBoard(BoardBean bean) {
+		
+		getCon();
+		
+		try {
+			String sql = "update board set subject=?, content=? where num=?";
+			System.out.println(bean.getSubject());
+			ps = con.prepareStatement(sql);
+			
+			System.out.println(bean.getSubject());
+			System.out.println(bean.getContent());
+			System.out.println(bean.getNum());
+			
+			ps.setString(1, bean.getSubject());
+			ps.setString(2, bean.getContent());
+			ps.setInt(3,  bean.getNum());	
+			
+			ps.executeUpdate();
+			con.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void deleteBoard(int num) {
+		getCon();
+		
+		try {
+			String sql = "delete from board where num=?";
+			ps = con.prepareStatement(sql);
+			ps.setInt(1, num);
+			ps.executeUpdate();
+			
+			con.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
